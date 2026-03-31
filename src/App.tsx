@@ -93,10 +93,9 @@ export default function App() {
             </p>
             <div className="bg-[#141414] text-[#E4E3E0] p-4 font-mono text-[10px] space-y-2">
               <p className="font-bold border-b border-white/20 pb-1 mb-2">SETUP INSTRUCTIONS:</p>
-              <p>1. Open the "Secrets" panel in AI Studio.</p>
-              <p>2. Add a new secret named <span className="text-yellow-400">GEMINI_API_KEY</span>.</p>
-              <p>3. Paste your Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" className="underline hover:text-white">Google AI Studio</a>.</p>
-              <p>4. Restart the application to apply changes.</p>
+              <p>1. Set the <span className="text-yellow-400">GEMINI_API_KEY</span> in your environment variables.</p>
+              <p>2. Paste your Gemini API key from <a href="https://ai.google.dev/" target="_blank" className="underline hover:text-white">Google Cloud Console</a>.</p>
+              <p>3. Restart the application to apply changes.</p>
             </div>
           </div>
           <button 

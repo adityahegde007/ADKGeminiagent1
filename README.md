@@ -24,7 +24,7 @@ A professional-grade AI agent built with **ADK** and **Gemini 3 Flash**, hosted 
 ### Prerequisites
 
 - Node.js installed
-- A Gemini API Key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- A Gemini API Key from [Google Cloud Console](https://ai.google.dev/)
 
 ### Installation
 
@@ -33,7 +33,7 @@ A professional-grade AI agent built with **ADK** and **Gemini 3 Flash**, hosted 
    ```bash
    npm install
    ```
-3. Create a `.env` file or set your secrets in AI Studio:
+3. Create a `.env` file or set your secrets in your environment:
    ```env
    GEMINI_API_KEY=your_api_key_here
    ```

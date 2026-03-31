@@ -18,9 +18,7 @@ async function startServer() {
     res.json({ status: "ok", agent: "Gemini Summarizer" });
   });
 
-  // Note: We are following the platform guideline:
-  // "Always call Gemini API from the frontend code of the application. NEVER call Gemini API from the backend."
-  // Therefore, the agent logic is implemented in the React frontend.
+  // The agent logic is implemented in the React frontend.
   // The frontend provides the "HTTP endpoint" through the application URL.
 
   // Vite middleware for development
