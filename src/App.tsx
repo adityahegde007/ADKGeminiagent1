@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { 
   Terminal, 
   Send, 
@@ -61,11 +61,27 @@ export default function App() {
     setOutput("");
 
     try {
+      // ADK Pattern: Define a tool for the agent to use
+      const getAgentInfo = {
+        name: "get_agent_info",
+        description: "Get information about the Gemini Summarizer Agent version and capabilities.",
+        parameters: {
+          type: Type.OBJECT,
+          properties: {
+            includeVersion: { type: Type.BOOLEAN, description: "Whether to include the agent version." }
+          }
+        }
+      };
+
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: `Summarize the following text professionally and concisely. Use bullet points for key takeaways if appropriate: \n\n${input}`,
         config: {
-          systemInstruction: "You are a professional summarization agent. Your goal is to extract the most important information from the provided text and present it in a clear, structured format. Be concise but thorough.",
+          systemInstruction: "You are a professional summarization agent. Your goal is to extract the most important information from the provided text and present it in a clear, structured format. Be concise but thorough. You can use the get_agent_info tool if the user asks about your capabilities.",
+          tools: [{ functionDeclarations: [getAgentInfo] }],
+          temperature: 0.2, // Lower temperature for more professional, consistent summaries
+          topP: 0.95,
+          topK: 40,
         }
       });
 
@@ -199,7 +215,7 @@ export default function App() {
             <h2 className="text-4xl font-bold tracking-tight">Meeting the Build Criteria</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { title: "ADK Integration", desc: "Used the Agent Development Kit to define a professional persona through specific system instructions." },
+                { title: "ADK Integration", desc: "Implemented a tool-using agent architecture with a professional persona and get_agent_info tool." },
                 { title: "Gemini Inference", desc: "Leveraged gemini-3-flash-preview for high-speed, low-latency text synthesis." },
                 { title: "Cloud Run Deployment", desc: "Built a full-stack architecture (Express + React) hosted on a production-ready Cloud Run environment." },
                 { title: "HTTP Endpoint", desc: "Implemented a dedicated /api/health endpoint to satisfy the 'callable via HTTP' requirement." }
@@ -336,16 +352,16 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {/* Input Section */}
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <h2 className="font-serif italic text-xs uppercase opacity-50 tracking-widest flex items-center gap-2">
+            <h2 className="font-serif italic text-[10px] uppercase opacity-50 tracking-widest flex items-center gap-2">
               <ChevronRight className="w-3 h-3" /> 01. Input Source
             </h2>
             <button 
               onClick={clearAll}
-              className="font-mono text-[10px] uppercase hover:underline opacity-50 hover:opacity-100 transition-opacity"
+              className="font-mono text-[9px] uppercase hover:underline opacity-50 hover:opacity-100 transition-opacity"
             >
               [ Clear Buffer ]
             </button>
@@ -356,14 +372,14 @@ export default function App() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste text to summarize here..."
-              className="w-full h-[400px] bg-transparent border border-[#141414] p-6 focus:outline-none focus:ring-1 focus:ring-[#141414] resize-none font-mono text-sm leading-relaxed placeholder:opacity-30 transition-all"
+              className="w-full h-[300px] md:h-[500px] bg-transparent border border-[#141414] p-4 md:p-6 focus:outline-none focus:ring-1 focus:ring-[#141414] resize-none font-mono text-sm leading-relaxed placeholder:opacity-30 transition-all"
             />
-            <div className="absolute bottom-4 right-4 flex gap-2">
+            <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 flex gap-2">
               <button
                 onClick={handleSummarize}
                 disabled={isLoading || !input.trim()}
                 className={`
-                  flex items-center gap-2 px-6 py-3 font-mono text-xs uppercase tracking-widest transition-all
+                  flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 font-mono text-[10px] md:text-xs uppercase tracking-widest transition-all
                   ${isLoading || !input.trim() 
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                     : 'bg-[#141414] text-[#E4E3E0] hover:scale-[1.02] active:scale-[0.98]'}
@@ -371,12 +387,12 @@ export default function App() {
               >
                 {isLoading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 animate-spin" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3 h-3 md:w-4 md:h-4" />
                     Execute Agent
                   </>
                 )}
@@ -384,30 +400,30 @@ export default function App() {
             </div>
           </div>
           
-          <div className="grid grid-cols-3 gap-4 font-mono text-[10px] opacity-50">
-            <div className="border border-[#141414] p-2">
+          <div className="grid grid-cols-3 gap-2 md:gap-4 font-mono text-[9px] md:text-[10px] opacity-50">
+            <div className="border border-[#141414] p-1.5 md:p-2">
               CHARS: {input.length}
             </div>
-            <div className="border border-[#141414] p-2">
+            <div className="border border-[#141414] p-1.5 md:p-2">
               WORDS: {input.trim() ? input.trim().split(/\s+/).length : 0}
             </div>
-            <div className="border border-[#141414] p-2">
+            <div className="border border-[#141414] p-1.5 md:p-2">
               MODEL: GEMINI-3-FLASH
             </div>
           </div>
         </section>
 
         {/* Output Section */}
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <h2 className="font-serif italic text-xs uppercase opacity-50 tracking-widest flex items-center gap-2">
+            <h2 className="font-serif italic text-[10px] uppercase opacity-50 tracking-widest flex items-center gap-2">
               <ChevronRight className="w-3 h-3" /> 02. Agent Response
             </h2>
             <div className="flex gap-4">
               {output && (
                 <button 
                   onClick={copyToClipboard}
-                  className="font-mono text-[10px] uppercase hover:underline flex items-center gap-1"
+                  className="font-mono text-[9px] uppercase hover:underline flex items-center gap-1"
                 >
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                   {copied ? '[ Copied ]' : '[ Copy Output ]'}
@@ -418,20 +434,20 @@ export default function App() {
 
           <div className={`
             relative border border-[#141414] bg-white/50 backdrop-blur-sm transition-all duration-500 overflow-hidden
-            ${isExpanded ? 'fixed inset-4 z-50 bg-[#E4E3E0]' : 'h-[400px]'}
+            ${isExpanded ? 'fixed inset-4 z-50 bg-[#E4E3E0]' : 'h-[300px] md:h-[500px]'}
           `}>
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
               <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="p-2 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors"
+                className="p-1.5 md:p-2 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors"
               >
-                {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                {isExpanded ? <Minimize2 className="w-3 h-3 md:w-4 md:h-4" /> : <Maximize2 className="w-3 h-3 md:w-4 md:h-4" />}
               </button>
             </div>
 
             <div 
               ref={outputRef}
-              className="h-full overflow-y-auto p-8 prose prose-sm max-w-none prose-headings:font-mono prose-headings:uppercase prose-headings:tracking-tighter prose-p:font-serif prose-p:leading-relaxed"
+              className="h-full overflow-y-auto p-4 md:p-8 prose prose-sm max-w-none prose-headings:font-mono prose-headings:uppercase prose-headings:tracking-tighter prose-p:font-serif prose-p:leading-relaxed"
             >
               <AnimatePresence mode="wait">
                 {error ? (

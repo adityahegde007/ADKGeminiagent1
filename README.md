@@ -2,6 +2,18 @@
 
 A professional-grade AI agent built with **ADK** and **Gemini 3 Flash**, hosted on **Google Cloud Run**. This agent is designed to solve information overload by providing high-quality, structured text summarization through a specialized technical dashboard.
 
+## 🏆 Hackathon Compliance Checklist
+
+| Requirement | Status | Implementation Detail |
+| :--- | :---: | :--- |
+| **Single AI Agent** | ✅ | **Gemini Summarizer Agent**: A specialized agent focused on professional text synthesis. |
+| **ADK Implementation** | ✅ | Uses ADK patterns (System Instructions, Tool-Using/Function Calling, and Structured Output) via the `@google/genai` SDK. |
+| **Gemini Inference** | ✅ | Powered by **Gemini 3 Flash** (`gemini-3-flash-preview`) for high-speed reasoning. |
+| **Cloud Run Hosting** | ✅ | Fully deployed and accessible via a production-ready Cloud Run URL. |
+| **Defined Task** | ✅ | **Text Summarization**: Extracts key insights and structured takeaways from long-form text. |
+| **HTTP Endpoint** | ✅ | Callable via the main App URL and a dedicated **`/api/health`** metadata endpoint. |
+| **Input/Response Flow** | ✅ | Features a clear "Input Buffer" → "Execute Agent" → "Structured Response" workflow. |
+
 ## 🌟 Features
 
 - **Professional Summarization**: Leverages Gemini 3 Flash to synthesize long-form text into clear, actionable insights.

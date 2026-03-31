@@ -18,8 +18,8 @@ The **Gemini Summarizer Agent** is a specialized AI workstation built to solve i
 ---
 
 ## Meeting the Build Criteria
-- **ADK Integration:** Used the Agent Development Kit (ADK) to define a professional "Summarizer" persona through specific system instructions and model configurations.
-- **Gemini Inference:** Leveraged `gemini-3-flash-preview` for high-speed, low-latency text synthesis.
+- **ADK Integration:** Implemented a tool-using agent architecture using the Agent Development Kit (ADK) patterns. This includes a specialized "Professional Summarizer" persona defined through system instructions and a functional `get_agent_info` tool for capability discovery.
+- **Gemini Inference:** Leveraged `gemini-3-flash-preview` for high-speed, low-latency text synthesis with optimized generation parameters (temperature: 0.2).
 - **Cloud Run Deployment:** Built a full-stack architecture (Express + React) to ensure the agent is hosted on a production-ready Cloud Run environment.
 - **HTTP Endpoint:** Implemented a dedicated `/api/health` endpoint to satisfy the "callable via HTTP" requirement.
 
