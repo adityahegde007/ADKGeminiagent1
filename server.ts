@@ -33,8 +33,19 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.get('*', async (req, res) => {
+      // Read the index.html and inject the environment variables
+      const fs = await import("fs");
+      let html = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
+      
+      // Inject the key into a global window object
+      const config = {
+        GEMINI_API_KEY: process.env.GEMINI_API_KEY
+      };
+      const script = `<script>window.RUNTIME_CONFIG = ${JSON.stringify(config)};</script>`;
+      html = html.replace('<head>', `<head>${script}`);
+      
+      res.send(html);
     });
   }
 

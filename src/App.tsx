@@ -21,8 +21,22 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import ReactMarkdown from "react-markdown";
 
-// Initialize Gemini API
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize Gemini API with fallback for runtime-injected config
+const getApiKey = () => {
+  // 1. Check for baked-in key (Vite define)
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'undefined') {
+    return process.env.GEMINI_API_KEY;
+  }
+  // 2. Check for runtime-injected key (from server.ts)
+  const runtimeConfig = (window as any).RUNTIME_CONFIG;
+  if (runtimeConfig?.GEMINI_API_KEY) {
+    return runtimeConfig.GEMINI_API_KEY;
+  }
+  return null;
+};
+
+const apiKey = getApiKey();
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export default function App() {
   const [input, setInput] = useState("");
@@ -35,6 +49,10 @@ export default function App() {
 
   const handleSummarize = async () => {
     if (!input.trim()) return;
+    if (!ai) {
+      setError("GEMINI_API_KEY is missing. Please ensure it is set in the environment or secrets.");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -58,6 +76,37 @@ export default function App() {
     }
   };
 
+  // If API key is missing, show a clear setup instruction UI
+  if (!apiKey) {
+    return (
+      <div className="min-h-screen bg-[#E4E3E0] flex items-center justify-center p-8">
+        <div className="max-w-md w-full border border-[#141414] p-8 space-y-6 bg-white shadow-2xl">
+          <div className="flex items-center gap-3 border-b border-[#141414] pb-4">
+            <AlertCircle className="text-red-500 w-6 h-6" />
+            <h1 className="font-mono text-sm font-bold uppercase tracking-tighter">Configuration Error</h1>
+          </div>
+          <div className="space-y-4">
+            <p className="font-serif text-sm leading-relaxed">
+              The <span className="font-mono font-bold">GEMINI_API_KEY</span> is missing from the application environment.
+            </p>
+            <div className="bg-[#141414] text-[#E4E3E0] p-4 font-mono text-[10px] space-y-2">
+              <p className="font-bold border-b border-white/20 pb-1 mb-2">SETUP INSTRUCTIONS:</p>
+              <p>1. Open the "Secrets" panel in AI Studio.</p>
+              <p>2. Add a new secret named <span className="text-yellow-400">GEMINI_API_KEY</span>.</p>
+              <p>3. Paste your Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" className="underline hover:text-white">Google AI Studio</a>.</p>
+              <p>4. Restart the application to apply changes.</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => window.location.reload()}
+            className="w-full bg-[#141414] text-[#E4E3E0] py-3 font-mono text-[10px] uppercase tracking-widest hover:bg-opacity-90 transition-all"
+          >
+            [ Reload Application ]
+          </button>
+        </div>
+      </div>
+    );
+  }
   const copyToClipboard = () => {
     navigator.clipboard.writeText(output);
     setCopied(true);
