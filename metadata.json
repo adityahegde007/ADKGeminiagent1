@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Summarizer Agent",
+  "description": "A professional AI agent that performs text summarization using Gemini 3 Flash.",
+  "requestFramePermissions": []
+}
